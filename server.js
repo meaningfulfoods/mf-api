@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express()
+const PORT = process.env.PORT || 8080;
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config({ path: "./config/config.env" });
@@ -24,9 +25,12 @@ app.use("/api", banner);
 const product = require("./routes/productRoute");
 app.use("/api", product);
 
+
+//Connect to the database before listening
 const { connectDatabase } = require("./config/database")
 
-connectDatabase()
-
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
+connectDatabase().then(() => {
+  app.listen(PORT, () => {
+      console.log(`Listening on port ${PORT}...`);
+  })
+})
